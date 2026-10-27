@@ -1,0 +1,12 @@
+{
+  "name": "chatelier",
+  "version": "0.1.0-alpha.1",
+  "description": "A local-first workshop for ChatGPT conversations: navigation, snapshots, exports and an opt-in local archive.",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "author": "Wyatt Walsh",
+  "repository": { "type": "git", "url": "https://github.com/wyattowalsh/chatelier.git" },
+  "packageManager": "pnpm@12.15.0",
+  "engines": { "node": ">=22.16.0" }
+}

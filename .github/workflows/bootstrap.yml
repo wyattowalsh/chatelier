@@ -1,0 +1,39 @@
+name: Resolve initial toolchain
+on:
+  push:
+    branches: [main]
+    paths: [package.json, .github/workflows/bootstrap.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  resolve:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - name: Install pinned package manager
+        run: npm install --global pnpm@12.15.0
+      - name: Resolve exact dependencies without executing package scripts
+        run: |
+          pnpm add --save-exact --ignore-scripts valibot turndown turndown-plugin-gfm idb minisearch fflate diff react react-dom @radix-ui/react-slot class-variance-authority clsx tailwind-merge lucide-react
+          pnpm add --save-dev --save-exact --ignore-scripts wxt @wxt-dev/module-react @tailwindcss/vite tailwindcss esbuild typescript vitest @playwright/test @types/node@24 @types/react @types/react-dom @types/turndown @types/turndown-plugin-gfm eslint @eslint/js typescript-eslint eslint-config-prettier prettier fake-indexeddb jsdom
+      - name: Package reproducible dependency environment
+        run: |
+          tar -czf dependency-environment.tar.gz node_modules package.json pnpm-lock.yaml
+          sha256sum dependency-environment.tar.gz > dependency-environment.sha256
+          cat package.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: initial-toolchain
+          path: |
+            dependency-environment.tar.gz
+            dependency-environment.sha256
+            package.json
+            pnpm-lock.yaml
+          retention-days: 2
